@@ -28,8 +28,11 @@ public:
     }
     void addCourse(Course *A) override
     {
-        courses[courseNumber] = A;
-        courseNumber++;
+        if (courseNumber < 4)
+        {
+            courses[courseNumber] = A;
+            courseNumber++;
+        }
     }
     friend class System;
 };
@@ -46,8 +49,11 @@ public:
     }
     void addCourse(Course *A) override
     {
-        courses[courseNumber] = A;
-        courseNumber++;
+        if (courseNumber < 2)
+        {
+            courses[courseNumber] = A;
+            courseNumber++;
+        }
     }
 
     friend class System;
@@ -117,13 +123,54 @@ public:
         }
         else
         {
+            courseCapacity = 2 * courseCapacity;
+            Course **temp = new Course *[courseCapacity];
+            for (int i = 0; i < courseNumber; i++)
+            {
+                temp[i] = courses[i];
+            }
+            delete[] courses;
+            courses = temp;
         }
     }
     void addStudent(Student *A)
     {
+
+        if (studentNumber < studentCapacity)
+        {
+            students[studentNumber] = A;
+            studentNumber++;
+        }
+        else
+        {
+            studentCapacity = 2 * studentCapacity;
+            Student **temp = new Student *[studentCapacity];
+            for (int i = 0; i < studentNumber; i++)
+            {
+                temp[i] = students[i];
+            }
+            delete[] students;
+            students = temp;
+        }
     }
     void addTeacher(Teacher *A)
     {
+        if (teacherNumber < teacherCapacity)
+        {
+            teachers[teacherNumber] = A;
+            teacherNumber++;
+        }
+        else
+        {
+            teacherCapacity = 2 * teacherCapacity;
+            Teacher **temp = new Teacher *[teacherCapacity];
+            for (int i = 0; i < teacherNumber; i++)
+            {
+                temp[i] = teachers[i];
+            }
+            delete[] teachers;
+            teachers = temp;
+        }
     }
     Course *findCourse(string courseName) const
     {
@@ -178,7 +225,7 @@ public:
 
     Student *findStudent(string name) const
     {
-        for (int i = 0; i < teacherNumber; i++)
+        for (int i = 0; i < studentNumber; i++)
         {
             Student *temp = students[i];
             if (temp->name == name)
@@ -191,7 +238,7 @@ public:
 
     Student *findStudent(int id) const
     {
-        for (int i = 0; i < teacherNumber; i++)
+        for (int i = 0; i < studentNumber; i++)
         {
             Student *temp = students[i];
             if (temp->id == id)
