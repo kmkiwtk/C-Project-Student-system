@@ -12,7 +12,7 @@ protected:
     string name;
 
 public:
-    virtual void addCourse(Course A) = 0;
+    virtual void addCourse(Course* A) = 0;
 };
 class Student : public Person
 {
@@ -21,8 +21,10 @@ private:
     Course *courses[4];
 
 public:
-    void addCourse(Course A) override
+    void addCourse(Course* A) override
     {
+        courses[courseNumber] = A;
+        courseNumber++;
     }
 };
 class Teacher : public Person
@@ -32,24 +34,31 @@ private:
     Course *courses[2];
 
 public:
-    void addCourse(Course A) override
+    void addCourse(Course* A) override
     {
+        courses[courseNumber] = A;
+        courseNumber++;
     }
 };
 
 class Course
 {
-    string name, stratTime;
-    int code, hours;
+    string name, startTime;
+    int code, hours, studentNumber;
     Teacher *teacher;
     Student **students;
 
 public:
-    void addStudent()
+    void addStudent(Student* A)
     {
+        students[studentNumber] = A;
     }
-    void addTeacher()
+    void addTeacher(Teacher* A)
     {
+        if(teacher != NULL){
+            cout << "The teacher will be changed from" endl;
+        }
+        teacher = A;
     }
 };
 
