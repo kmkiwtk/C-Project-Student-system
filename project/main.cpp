@@ -85,9 +85,23 @@ public:
     {
         if (teacher != NULL)
         {
-            cout << "The teacher will be changed from" << endl;
+            cout << "The teacher will be changed" << endl;
         }
         teacher = A;
+    }
+    int findStudent(Student *A)
+    {
+        for(i = 0; i < studentNumber, i++)
+        {
+            if (Student[i].name == A.name)
+            {
+                return i;
+            }
+            else
+            {
+                return -1;
+            }
+        }
     }
 
     friend class System;
@@ -109,14 +123,58 @@ public:
         teachers = new Teacher *[teacherCapacity];
         courses = new Course *[courseCapacity];
     }
-    void CourseAddStudent()
+
+    bool CourseAddStudent(int CC, string SN)
     {
+        Course *C;
+        Student *S;
+        C = findCourse(CC);
+        S = findStudent(SN);
+
+        if (C != nullptr && S != nullptr)
+        {
+            if(S.addCourse(C))
+            {
+                C.addStudent(S);
+                return true;
+            }
+        }
+        return false;
     }
-    void CourseChangeTeacher()
+    bool CourseChangeTeacher(int CC, string TN)
     {
+        Course *C;
+        Teacher *T;
+        C = findCourse(CC);
+        T = findTeacher(TN);
+
+        if (C != nullptr && T != nullptr)
+        {
+            if(T.addCourse(C))
+            {
+                C.addTeacher(T);
+                return true;
+            }
+        }
+        return false;
     }
-    void CourseDeleteStudent()
+    bool CourseDeleteStudent(int CC, string SN)
     {
+        Course *C;
+        Student *S
+        C = findCourse(CC);
+        S = findStudent(SN);
+        int index = C.findStudent(S);
+        if(index != -1)
+        {
+            for(int i = index; i<C.studentNumber-1; i++)
+            {
+                C.students[i] = C.students[i+1];
+            }
+            C.students[C.studentNumber] = nullptr;
+            C.studentNumber--;
+        }
+
     }
     void addCourse(Course *A)
     {
