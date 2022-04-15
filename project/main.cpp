@@ -13,7 +13,7 @@ protected:
 
 public:
     Person(int id, int age, string name) : id(id), age(age), name(name) {}
-    virtual void addCourse(Course *A) = 0;
+    virtual bool addCourse(Course *A) = 0;
 };
 class Student : public Person
 {
@@ -26,13 +26,15 @@ public:
     {
         courseNumber = 0;
     }
-    void addCourse(Course *A) override
+    bool addCourse(Course *A) override
     {
         if (courseNumber < 4)
         {
             courses[courseNumber] = A;
             courseNumber++;
+            return true;
         }
+        return false;
     }
     friend class System;
 };
@@ -47,13 +49,15 @@ public:
     {
         courseNumber = 0;
     }
-    void addCourse(Course *A) override
+    bool addCourse(Course *A) override
     {
         if (courseNumber < 2)
         {
             courses[courseNumber] = A;
             courseNumber++;
+            return true;
         }
+        return false;
     }
 
     friend class System;
@@ -105,7 +109,7 @@ public:
         teachers = new Teacher *[teacherCapacity];
         courses = new Course *[courseCapacity];
     }
-    void CourseAddStudent(Student *A)
+    void CourseAddStudent()
     {
     }
     void CourseChangeTeacher()
