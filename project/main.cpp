@@ -14,6 +14,8 @@ protected:
 public:
     Person(int id, int age, string name) : id(id), age(age), name(name) {}
     virtual bool addCourse(Course *A) = 0;
+    virtual bool deleteCourse(Course *A) = 0;
+    virtual int findCourse(Course *A) = 0;
 };
 class Student : public Person
 {
@@ -28,15 +30,55 @@ public:
     }
     bool addCourse(Course *A) override
     {
+        for (int i = 0; i < courseNumber; i++)
+        {
+            if (courses[i] == A)
+            {
+                cout << "Course already taken!" << endl;
+                return false;
+            }
+        }
         if (courseNumber < 4)
         {
             courses[courseNumber] = A;
             courseNumber++;
             return true;
         }
+        cout << name << " can't take more course " << endl;
         return false;
     }
+
+    bool deleteCourse(Course *A)
+    {
+        int index = findCourse(A);
+        if (index != -1)
+        {
+            for (int i = index; i < courseNumber - 1; i++)
+            {
+                courses[i] = courses[i + 1];
+            }
+            courses[courseNumber--] = nullptr;
+            return true;
+        }
+        return false;
+    }
+
+    int findCourse(Course *A)
+    {
+        for (int i = 0; i < courseNumber; i++)
+        {
+            if (courses[i] == A)
+            {
+                cout << i << endl;
+                return i;
+            }
+        }
+        cout << name << " doesn't take this course." << endl;
+        return -1;
+    }
+
     friend class System;
+    friend class Course;
 };
 class Teacher : public Person
 {
@@ -57,7 +99,37 @@ public:
             courseNumber++;
             return true;
         }
+        cout << name << " can't teach more courses." << endl;
         return false;
+    }
+    bool deleteCourse(Course *A)
+    {
+        int index = findCourse(A);
+        if (index != -1)
+        {
+            for (int i = 0; i < courseNumber - 1; i++)
+            {
+                courses[i] = courses[i + 1];
+            }
+            courses[courseNumber--] = nullptr;
+        }
+        else
+        {
+            cout << "Delete failed!" << endl;
+        }
+    }
+
+    int findCourse(Course *A)
+    {
+        for (int i = 0; i < courseNumber; i++)
+        {
+            if (courses[i] == A)
+            {
+                return i;
+            }
+        }
+        cout << name << " doesn't teach this course " << endl;
+        return -1;
     }
 
     friend class System;
@@ -66,7 +138,7 @@ public:
 class Course
 {
     string name, startTime;
-    int code, hours, studentNumber;
+    int code, hours, studentNumber, studentCapacity;
     Teacher *teacher;
     Student **students;
 
@@ -75,36 +147,81 @@ public:
     {
         teacher = nullptr;
         studentNumber = 0;
-        students = nullptr;
+        studentCapacity = 10;
+        students = new Student *[studentCapacity];
     }
     void addStudent(Student *A)
     {
-        students[studentNumber] = A;
+        if (studentNumber < studentCapacity)
+        {
+            students[studentNumber] = A;
+            studentNumber++;
+        }
+        else
+        {
+            studentCapacity = 2 * studentCapacity;
+            Student **temp = new Student *[studentCapacity];
+            for (int i = 0; i < studentNumber; i++)
+            {
+                temp[i] = students[i];
+            }
+            delete[] students;
+            students = temp;
+        }
     }
     void addTeacher(Teacher *A)
     {
-        if (teacher != NULL)
+        if (teacher != nullptr)
         {
-            cout << "The teacher will be changed" << endl;
+            char response;
+            cout << "The teacher will be changed. Do you want to change?[y/n]" << endl;
+            cin >> response;
+            if (response == 'y' || response == 'Y')
+            {
+                teacher = A;
+            }
         }
-        teacher = A;
-    }
-    int findStudent(Student *A)
-    {
-        for(i = 0; i < studentNumber, i++)
+        else
         {
-            if (Student[i].name == A.name)
+            teacher = A;
+        }
+    }
+
+    int findStudent(Student *S)
+    {
+        for (int i = 0; i < studentNumber; i++)
+        {
+            if (students[i] == S)
             {
                 return i;
             }
-            else
+        }
+        cout << S->name << " doesn't take " << name << endl;
+        return -1;
+    }
+
+    bool deleteStudent(Student *A)
+    {
+        int index = findStudent(A);
+        if (index != -1)
+        {
+            for (int i = 0; i < studentNumber - 1; i++)
             {
-                return -1;
+                students[i] = students[i + 1];
             }
+            students[studentNumber--] = nullptr;
+            return true;
+        }
+        else
+        {
+            cout << "Delete failed!" << endl;
+            return false;
         }
     }
 
     friend class System;
+    friend class Teacher;
+    friend class Student;
 };
 
 class System
@@ -133,12 +250,14 @@ public:
 
         if (C != nullptr && S != nullptr)
         {
-            if(S.addCourse(C))
+            if (S->addCourse(C))
             {
-                C.addStudent(S);
+                C->addStudent(S);
+                cout << "Add success!" << endl;
                 return true;
             }
         }
+        cout << "Add failed!" << endl;
         return false;
     }
     bool CourseChangeTeacher(int CC, string TN)
@@ -150,31 +269,33 @@ public:
 
         if (C != nullptr && T != nullptr)
         {
-            if(T.addCourse(C))
+            if (T->addCourse(C))
             {
-                C.addTeacher(T);
+                C->addTeacher(T);
+                cout << "Change success!" << endl;
                 return true;
             }
         }
+        cout << "Change failed!" << endl;
         return false;
     }
     bool CourseDeleteStudent(int CC, string SN)
     {
         Course *C;
-        Student *S
+        Student *S;
         C = findCourse(CC);
         S = findStudent(SN);
-        int index = C.findStudent(S);
-        if(index != -1)
+        if (S != nullptr && C != nullptr)
         {
-            for(int i = index; i<C.studentNumber-1; i++)
+            if (S->deleteCourse(C))
             {
-                C.students[i] = C.students[i+1];
+                C->deleteStudent(S);
+                cout << "Course delete student :Delete success!" << endl;
+                return true;
             }
-            C.students[C.studentNumber] = nullptr;
-            C.studentNumber--;
         }
-
+        cout << "Delete failed!" << endl;
+        return false;
     }
     void addCourse(Course *A)
     {
@@ -244,6 +365,7 @@ public:
                 return temp;
             }
         }
+        cout << "Course doesn't exist" << endl;
         return nullptr;
     }
     Course *findCourse(int code) const
@@ -256,6 +378,7 @@ public:
                 return temp;
             }
         }
+        cout << "Course doesn't exist" << endl;
         return nullptr;
     }
 
@@ -282,6 +405,7 @@ public:
                 return temp;
             }
         }
+        cout << "Teacher: " << name << " not found." << endl;
         return nullptr;
     }
 
@@ -295,6 +419,7 @@ public:
                 return temp;
             }
         }
+        cout << "Student: " << name << " not found." << endl;
         return nullptr;
     }
 
@@ -311,42 +436,382 @@ public:
         return nullptr;
     }
 
+    void displayTable()
+    {
+        int fwidth = 18;
+        int width = 10;
+        cout << "Course:" << endl;
+        cout << left << setw(fwidth)
+             << "Name"
+             << left << setw(width)
+             << "Code"
+             << left << setw(width)
+             << "Teacher"
+             << left << setw(width)
+             << "Hours"
+             << left << setw(width)
+             << "Time" << endl;
+        for (int i = 0; i < courseNumber; i++)
+        {
+            Course *temp = courses[i];
+
+            cout << left << setw(fwidth)
+                 << temp->name
+                 << left << setw(width)
+                 << temp->code
+                 << left << setw(width)
+                 << temp->teacher->name
+                 << left << setw(width)
+                 << temp->hours
+                 << left << setw(width)
+                 << temp->startTime
+                 << endl;
+        }
+        cout << "Member:" << endl;
+        cout << left << setw(fwidth)
+             << "Name"
+             << left << setw(width)
+             << "Identity"
+             << left << setw(width)
+             << "Id"
+             << left << setw(width)
+             << "Age"
+             << left << setw(width)
+             << "Courses" << endl;
+        cout << teacherNumber << endl;
+        for (int i = 0; i < teacherNumber; i++)
+        {
+            Teacher *temp = teachers[i];
+
+            cout << left << setw(width)
+                 << temp->name
+                 << left << setw(width)
+                 << "teacher"
+                 << left << setw(width)
+                 << temp->id
+                 << left << setw(width)
+                 << temp->age;
+            for (int j = 0; j < temp->courseNumber; j++)
+            {
+                cout << temp->courses[j]->name << " ";
+            }
+            cout << endl;
+        }
+        for (int i = 0; i < studentNumber; i++)
+        {
+            Student *temp = students[i];
+
+            cout << left << setw(width)
+                 << temp->name
+                 << left << setw(width)
+                 << "student"
+                 << left << setw(width)
+                 << temp->id
+                 << left << setw(width)
+                 << temp->age;
+            for (int j = 0; j < temp->courseNumber; j++)
+            {
+                cout << temp->courses[j]->name << " ";
+            }
+            cout << endl;
+        }
+    }
+
     void writeBack()
     {
+        int fwidth = 18;
+        int width = 10;
+        ofstream courseData("./course.data");
+        ofstream memberData("./member.data");
+        courseData << left << setw(fwidth)
+                   << "Name"
+                   << left << setw(width)
+                   << "Code"
+                   << left << setw(width)
+                   << "Teacher"
+                   << left << setw(width)
+                   << "Hours"
+                   << left << setw(width)
+                   << "Time" << endl;
+        cout << "save course! : " << courseNumber << endl;
+        for (int i = 0; i < courseNumber; i++)
+        {
+            Course *temp = courses[i];
+
+            courseData << left << setw(fwidth)
+                       << temp->name
+                       << left << setw(width)
+                       << temp->code
+                       << left << setw(width)
+                       << temp->teacher->name
+                       << left << setw(width)
+                       << temp->hours
+                       << left << setw(width)
+                       << temp->startTime;
+            if (i != courseNumber - 1)
+            {
+                courseData << endl;
+            }
+        }
+        memberData << left << setw(width)
+                   << "Name"
+                   << left << setw(width)
+                   << "Identity"
+                   << left << setw(width)
+                   << "Id"
+                   << left << setw(width)
+                   << "Age"
+                   << left << setw(width)
+                   << "Number"
+                   << left << setw(width)
+                   << "Courses" << endl;
+        cout << "save teacher" << endl;
+        for (int i = 0; i < teacherNumber; i++)
+        {
+            Teacher *temp = teachers[i];
+
+            memberData << left << setw(width)
+                       << temp->name
+                       << left << setw(width)
+                       << "teacher"
+                       << left << setw(width)
+                       << temp->id
+                       << left << setw(width)
+                       << temp->age
+                       << left << setw(width)
+                       << temp->courseNumber;
+            for (int j = 0; j < temp->courseNumber; j++)
+            {
+                memberData << temp->courses[j]->name << " ";
+            }
+            memberData << endl;
+        }
+        cout << "save student" << endl;
+        for (int i = 0; i < studentNumber; i++)
+        {
+            Student *temp = students[i];
+
+            memberData << left << setw(width)
+                       << temp->name
+                       << left << setw(width)
+                       << "student"
+                       << left << setw(width)
+                       << temp->id
+                       << left << setw(width)
+                       << temp->age
+                       << left << setw(width)
+                       << temp->courseNumber;
+            for (int j = 0; j < temp->courseNumber; j++)
+            {
+                memberData << temp->courses[j]->name << " ";
+            }
+            if (i != studentNumber - 1)
+            {
+                memberData << endl;
+            }
+        }
+        memberData.close();
+        courseData.close();
     }
 
     void display()
     {
         bool flag = true;
-        string commend;
+        cout << "Welcome to Student course management system！ Please enter instructions：" << endl;
+        cout << "  "
+             << "1.display: "
+             << "Show the table." << endl;
+        cout << "  "
+             << "2.CourseAddStudent: "
+             << "Add students to the course." << endl;
+        cout << "  "
+             << "3.CourseChangeTeacher: "
+             << "Change teachers for courses." << endl;
+        cout << "  "
+             << "4.CourseDeleteStudent: "
+             << "Delete student from course." << endl;
+        cout << "  "
+             << "5.quit: "
+             << "Quit the program." << endl;
         while (flag)
         {
-            cout << "Welcome to Student course management system！ Please enter instructions：" << endl;
-            cout << "  "
-                 << "1.display: "
-                 << "Show the table." << endl;
-            cout << "  "
-                 << "2.addStudent: "
-                 << "Add students to the course." << endl;
-            cout << "  "
-                 << "3.changeTeacher: "
-                 << "Change teachers for courses." << endl;
-            cout << "  "
-                 << "4deleteStudent: "
-                 << "Delete student for course." << endl;
+            int code;
+            string sName;
+            cout << "please insert your selection:";
+            char choose;
+            cin >> choose;
+            switch (choose)
+            {
+            case '1':
+                displayTable();
+                break;
+            case '2':
+
+                cout << "Please insert Course Code:";
+                cin >> code;
+                cout << "Please insert student's name:";
+                cin >> sName;
+                CourseAddStudent(code, sName);
+                break;
+            case '3':
+                cout << "Please insert Course Code:";
+                cin >> code;
+                cout << "Please insert teacher's name:";
+                cin >> sName;
+                CourseChangeTeacher(code, sName);
+                break;
+            case '4':
+                cout << "Please insert Course Code:";
+                cin >> code;
+                cout << "Please insert student's name:";
+                cin >> sName;
+                CourseDeleteStudent(code, sName);
+                break;
+            case '5':
+                flag = false;
+                break;
+            default:
+                cout << "Error command";
+            }
         }
     }
     void init()
     {
+        ifstream courseData("./course.data");
+        ifstream memberData("./member.data");
+
+        // check if file exist or not
+        if (courseData.is_open() || memberData.is_open())
+        {
+
+            cout << "File is open and ready" << '\n';
+            cout << " " << '\n';
+            //            return; // use this for program testing to check file is open only without reading the data
+        }
+        else
+        {
+            cout << "File not found!" << '\n';
+            cout << "check if path is .././src/***" << '\n';
+            cout << " " << '\n';
+            return;
+        }
+
+        string l;
+        getline(courseData, l);
+        getline(memberData, l);
+        cout << "文件跳过第一行";
+        while (!courseData.eof())
+        {
+            string name;
+            int code;
+            int hours;
+            string teacherName;
+            string time;
+            courseData >> name >> code >> teacherName >> hours >> time;
+            cout << name << " " << code << " " << hours << " " << time << endl;
+            Course *temp = new Course(name, time, code, hours);
+            this->addCourse(temp);
+        }
+
+        while (!memberData.eof())
+        {
+            string name;
+            string identity;
+            int id;
+            int age;
+            int courseNumber;
+            string course;
+
+            memberData >> name >> identity >> id >> age >> courseNumber;
+            cout << name << " " << identity << " " << id << " " << age << " " << courseNumber << endl;
+
+            if (identity == "teacher")
+            {
+                Teacher *temp = new Teacher(id, age, name);
+                for (int i = 0; i < courseNumber; i++)
+                {
+                    memberData >> course;
+                    cout << course << " ";
+                    Course *A = findCourse(course);
+                    if (A != nullptr)
+                    {
+                        temp->addCourse(A);
+                        A->addTeacher(temp);
+                    }
+                    else
+                    {
+                        cout << course << " don't find." << endl;
+                    }
+                }
+                addTeacher(temp);
+                cout << endl;
+            }
+            else if (identity == "student")
+            {
+                Student *temp = new Student(id, age, name);
+                for (int i = 0; i < courseNumber; i++)
+                {
+                    memberData >> course;
+                    cout << course << " ";
+                    Course *A = findCourse(course);
+                    if (A != nullptr)
+                    {
+                        temp->addCourse(A);
+                        A->addStudent(temp);
+                    }
+                    else
+                    {
+                        cout << course << " don't find." << endl;
+                    }
+                }
+                addStudent(temp);
+                cout << endl;
+            }
+            else
+            {
+                cout << "unknown person" << endl;
+            }
+        }
+        courseData.close();
+        memberData.close();
+        cout << "init success" << endl;
     }
 
     ~System()
     {
+        cout << "start save!" << endl;
         writeBack();
+        if (studentNumber != 0)
+        {
+            for (int i = 0; i < studentNumber; i++)
+            {
+                delete students[i];
+            }
+            delete[] students;
+        }
+        if (teacherNumber != 0)
+        {
+            for (int i = 0; i < teacherNumber; i++)
+            {
+                delete teachers[i];
+            }
+            delete[] teachers;
+        }
+        if (courseNumber != 0)
+        {
+            for (int i = 0; i < courseNumber; i++)
+            {
+                delete courses[i];
+            }
+            delete[] courses;
+        }
     }
 };
 
 int main()
 {
+    System Sys;
+    Sys.init();
+    Sys.display();
     return 0;
 }

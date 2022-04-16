@@ -1,9 +1,9 @@
-Name   identity  id   age  number course
-Willim  teacher   1   40    2   C++ Signal_and_System
-Kugar   teacher   2    45   2   Operation_System Python
-Jason   teacher   3     35  1   Java
-Bert    student   11    20  3   Signal_and_System  C++ Operation_System
-Caspar  student    12   21  2    Java Signal_and_System
-Aaron   student   13    20  3   Java Signal_and_System Operation_System
-Eddie   student   14    22  4   Java Signal_and_System Operation_System Python
-Hugo    student   15    18  1  C++ 
+Name      Identity  Id        Age       Number    Courses   
+Willim    teacher   1         40        2         C++ Signal_and_System 
+Kugar     teacher   2         45        2         Operation_System Python 
+Jason     teacher   3         35        1         Java 
+Bert      student   11        20        3         Signal_and_System C++ Operation_System 
+Caspar    student   12        21        2         Java Signal_and_System 
+Aaron     student   13        20        3         Java Signal_and_System Operation_System 
+Eddie     student   14        22        4         Java Signal_and_System Operation_System Python 
+Hugo      student   15        18        1         C++ 
