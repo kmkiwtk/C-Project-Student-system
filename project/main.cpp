@@ -481,7 +481,6 @@ public:
              << "Age"
              << left << setw(width)
              << "Courses" << endl;
-        cout << teacherNumber << endl;
         for (int i = 0; i < teacherNumber; i++)
         {
             Teacher *temp = teachers[i];
