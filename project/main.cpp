@@ -69,7 +69,7 @@ public:
         {
             if (courses[i] == A)
             {
-                cout << i << endl;
+                // cout << i << endl;
                 return i;
             }
         }
@@ -107,7 +107,7 @@ public:
         int index = findCourse(A);
         if (index != -1)
         {
-            for (int i = 0; i < courseNumber - 1; i++)
+            for (int i = index; i < courseNumber - 1; i++)
             {
                 courses[i] = courses[i + 1];
             }
@@ -269,9 +269,12 @@ public:
 
         if (C != nullptr && T != nullptr)
         {
+            Teacher *old = C->teacher;
+
             if (T->addCourse(C))
             {
                 C->addTeacher(T);
+                old->deleteCourse(C);
                 cout << "Change success!" << endl;
                 return true;
             }
