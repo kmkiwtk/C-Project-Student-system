@@ -48,7 +48,7 @@ public:
         return false;
     }
 
-    bool deleteCourse(Course *A)
+    bool deleteCourse(Course *A) override
     {
         int index = findCourse(A);
         if (index != -1)
@@ -63,7 +63,7 @@ public:
         return false;
     }
 
-    int findCourse(Course *A)
+    int findCourse(Course *A) override
     {
         for (int i = 0; i < courseNumber; i++)
         {
@@ -102,7 +102,7 @@ public:
         cout << name << " can't teach more courses." << endl;
         return false;
     }
-    bool deleteCourse(Course *A)
+    bool deleteCourse(Course *A) override
     {
         int index = findCourse(A);
         if (index != -1)
@@ -112,14 +112,14 @@ public:
                 courses[i] = courses[i + 1];
             }
             courses[courseNumber--] = nullptr;
+            return true;
         }
-        else
-        {
-            cout << "Delete failed!" << endl;
-        }
+
+        cout << "Delete failed!" << endl;
+        return false;
     }
 
-    int findCourse(Course *A)
+    int findCourse(Course *A) override
     {
         for (int i = 0; i < courseNumber; i++)
         {
@@ -186,7 +186,6 @@ public:
             teacher = A;
         }
     }
-
     int findStudent(Student *S)
     {
         for (int i = 0; i < studentNumber; i++)
@@ -199,7 +198,6 @@ public:
         cout << S->name << " doesn't take " << name << endl;
         return -1;
     }
-
     bool deleteStudent(Student *A)
     {
         int index = findStudent(A);
@@ -384,7 +382,6 @@ public:
         cout << "Course doesn't exist" << endl;
         return nullptr;
     }
-
     Teacher *findTeacher(int id) const
     {
         for (int i = 0; i < courseNumber; i++)
@@ -397,7 +394,6 @@ public:
         }
         return nullptr;
     }
-
     Teacher *findTeacher(string name) const
     {
         for (int i = 0; i < teacherNumber; i++)
@@ -411,7 +407,6 @@ public:
         cout << "Teacher: " << name << " not found." << endl;
         return nullptr;
     }
-
     Student *findStudent(string name) const
     {
         for (int i = 0; i < studentNumber; i++)
@@ -425,7 +420,6 @@ public:
         cout << "Student: " << name << " not found." << endl;
         return nullptr;
     }
-
     Student *findStudent(int id) const
     {
         for (int i = 0; i < studentNumber; i++)
@@ -438,7 +432,6 @@ public:
         }
         return nullptr;
     }
-
     void displayTable()
     {
         int fwidth = 18;
@@ -518,7 +511,6 @@ public:
             cout << endl;
         }
     }
-
     void writeBack()
     {
         int fwidth = 18;
@@ -615,7 +607,6 @@ public:
         memberData.close();
         courseData.close();
     }
-
     void display()
     {
         bool flag = true;
@@ -673,7 +664,7 @@ public:
                 flag = false;
                 break;
             default:
-                cout << "Error command";
+                cout << "Error command" << endl;
             }
         }
     }
@@ -701,7 +692,7 @@ public:
         string l;
         getline(courseData, l);
         getline(memberData, l);
-        cout << "文件跳过第一行";
+        // cout << "文件跳过第一行";
         while (!courseData.eof())
         {
             string name;
@@ -710,7 +701,7 @@ public:
             string teacherName;
             string time;
             courseData >> name >> code >> teacherName >> hours >> time;
-            cout << name << " " << code << " " << hours << " " << time << endl;
+            // cout << name << " " << code << " " << hours << " " << time << endl;
             Course *temp = new Course(name, time, code, hours);
             this->addCourse(temp);
         }
@@ -725,7 +716,7 @@ public:
             string course;
 
             memberData >> name >> identity >> id >> age >> courseNumber;
-            cout << name << " " << identity << " " << id << " " << age << " " << courseNumber << endl;
+            // cout << name << " " << identity << " " << id << " " << age << " " << courseNumber << endl;
 
             if (identity == "teacher")
             {
@@ -733,7 +724,7 @@ public:
                 for (int i = 0; i < courseNumber; i++)
                 {
                     memberData >> course;
-                    cout << course << " ";
+                    // cout << course << " ";
                     Course *A = findCourse(course);
                     if (A != nullptr)
                     {
@@ -742,11 +733,11 @@ public:
                     }
                     else
                     {
-                        cout << course << " don't find." << endl;
+                        // cout << course << " don't find." << endl;
                     }
                 }
                 addTeacher(temp);
-                cout << endl;
+                // cout << endl;
             }
             else if (identity == "student")
             {
@@ -754,7 +745,7 @@ public:
                 for (int i = 0; i < courseNumber; i++)
                 {
                     memberData >> course;
-                    cout << course << " ";
+                    // cout << course << " ";
                     Course *A = findCourse(course);
                     if (A != nullptr)
                     {
@@ -763,7 +754,7 @@ public:
                     }
                     else
                     {
-                        cout << course << " don't find." << endl;
+                        // cout << course << " don't find." << endl;
                     }
                 }
                 addStudent(temp);
@@ -771,14 +762,13 @@ public:
             }
             else
             {
-                cout << "unknown person" << endl;
+                // cout << "unknown person" << endl;
             }
         }
         courseData.close();
         memberData.close();
         cout << "init success" << endl;
     }
-
     ~System()
     {
         cout << "start save!" << endl;
