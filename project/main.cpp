@@ -28,6 +28,7 @@ public:
     {
         courseNumber = 0;
     }
+    // Check the availability and add a course for a student
     bool addCourse(Course *A) override
     {
         for (int i = 0; i < courseNumber; i++)
@@ -47,7 +48,7 @@ public:
         cout << name << " can't take more course " << endl;
         return false;
     }
-
+    // Check the availability and delete a course for a student
     bool deleteCourse(Course *A) override
     {
         int index = findCourse(A);
@@ -62,7 +63,7 @@ public:
         }
         return false;
     }
-
+    // Check whether a student has take a specific course, return the index of that course or return -1
     int findCourse(Course *A) override
     {
         for (int i = 0; i < courseNumber; i++)
@@ -91,6 +92,7 @@ public:
     {
         courseNumber = 0;
     }
+    // Check the availability and add a course for a teacher
     bool addCourse(Course *A) override
     {
         if (courseNumber < 2)
@@ -102,6 +104,7 @@ public:
         cout << name << " can't teach more courses." << endl;
         return false;
     }
+    // Check the availability and delete a course for a student
     bool deleteCourse(Course *A) override
     {
         int index = findCourse(A);
@@ -118,7 +121,7 @@ public:
         cout << "Delete failed!" << endl;
         return false;
     }
-
+    // Check whether a teacher is teaching a specific course, return the index of that course or return -1
     int findCourse(Course *A) override
     {
         for (int i = 0; i < courseNumber; i++)
@@ -169,6 +172,7 @@ public:
             students = temp;
         }
     }
+    // Add a teacher to a course
     void addTeacher(Teacher *A)
     {
         if (teacher != nullptr)
@@ -186,6 +190,7 @@ public:
             teacher = A;
         }
     }
+    // Check whether a student takes this course, return the index of that student or return -1
     int findStudent(Student *S)
     {
         for (int i = 0; i < studentNumber; i++)
@@ -198,6 +203,8 @@ public:
         cout << S->name << " doesn't take " << name << endl;
         return -1;
     }
+
+    // Check availability and delete a student from this course
     bool deleteStudent(Student *A)
     {
         int index = findStudent(A);
@@ -238,7 +245,7 @@ public:
         teachers = new Teacher *[teacherCapacity];
         courses = new Course *[courseCapacity];
     }
-
+    // Adding a student to a course
     bool CourseAddStudent(int CC, string SN)
     {
         Course *C;
@@ -258,6 +265,8 @@ public:
         cout << "Add failed!" << endl;
         return false;
     }
+
+    // Change the teacher of a course
     bool CourseChangeTeacher(int CC, string TN)
     {
         Course *C;
@@ -280,6 +289,8 @@ public:
         cout << "Change failed!" << endl;
         return false;
     }
+
+    // Deleting a student from a course
     bool CourseDeleteStudent(int CC, string SN)
     {
         Course *C;
@@ -298,6 +309,7 @@ public:
         cout << "Delete failed!" << endl;
         return false;
     }
+
     void addCourse(Course *A)
     {
         if (courseNumber < courseCapacity)
@@ -356,6 +368,8 @@ public:
             teachers = temp;
         }
     }
+
+    // Search for the course name provided by user, return the pointer of that course. Return nullptr while not found.
     Course *findCourse(string courseName) const
     {
         for (int i = 0; i < courseNumber; i++)
@@ -369,6 +383,8 @@ public:
         cout << "Course doesn't exist" << endl;
         return nullptr;
     }
+
+    // Search for the course code provided by user, return the pointer of that course. Return nullptr while not found.
     Course *findCourse(int code) const
     {
         for (int i = 0; i < courseNumber; i++)
@@ -382,6 +398,8 @@ public:
         cout << "Course doesn't exist" << endl;
         return nullptr;
     }
+
+    // Search for the teacher's ID provided by user, return the pointer of that teacher. Return nullptr while not found.
     Teacher *findTeacher(int id) const
     {
         for (int i = 0; i < courseNumber; i++)
@@ -394,6 +412,8 @@ public:
         }
         return nullptr;
     }
+
+    // Search for the teacher's name code provided by user, return the pointer of that teacher. Return nullptr while not found.
     Teacher *findTeacher(string name) const
     {
         for (int i = 0; i < teacherNumber; i++)
@@ -407,6 +427,8 @@ public:
         cout << "Teacher: " << name << " not found." << endl;
         return nullptr;
     }
+
+    // Search for the student's name provided by user, return the pointer of that student. Return nullptr while not found.
     Student *findStudent(string name) const
     {
         for (int i = 0; i < studentNumber; i++)
@@ -420,6 +442,8 @@ public:
         cout << "Student: " << name << " not found." << endl;
         return nullptr;
     }
+
+    // Search for the student's ID provided by user, return the pointer of that student. Return nullptr while not found.
     Student *findStudent(int id) const
     {
         for (int i = 0; i < studentNumber; i++)
@@ -432,6 +456,8 @@ public:
         }
         return nullptr;
     }
+
+    // Show all the data to the user on the screen
     void displayTable()
     {
         int fwidth = 18;
@@ -511,6 +537,8 @@ public:
             cout << endl;
         }
     }
+
+    // Write the data back into the original files
     void writeBack()
     {
         int fwidth = 18;
@@ -607,6 +635,8 @@ public:
         memberData.close();
         courseData.close();
     }
+
+    // Display the user interface of this program
     void display()
     {
         bool flag = true;
@@ -668,6 +698,7 @@ public:
             }
         }
     }
+    // Initializing the whole system, reading data from files
     void init()
     {
         ifstream courseData("./course.data");
@@ -769,6 +800,8 @@ public:
         memberData.close();
         cout << "init success" << endl;
     }
+
+    // Save changes before quit the program
     ~System()
     {
         cout << "start save!" << endl;
